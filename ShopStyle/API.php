@@ -268,7 +268,10 @@ class API
                 "query" => $this->buildQuery($params)
             )
         );
-//echo $url;die;
+		if($method == 'products'){
+			//echo $url;die;
+		}
+
         $response = $this->fetcher->get($url);
 
         if (!$response) {

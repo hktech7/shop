@@ -2,12 +2,75 @@
 include '../ShopStyle/Query/IQuery.php';
 include '../ShopStyle/Query/BasicQuery.php';
 $shop = new API('uid761-40030819-76');
+
+
+$cat = "mens-accessories";
+$colorCatLink = "";
+if(isset($_REQUEST['cat']) && !empty($_REQUEST['cat'])){
+	$cat = $_REQUEST['cat'];			
+	$colorCatLink = "?cat=".$cat;
+}
+
+if(isset($_REQUEST['sb']) && !empty($_REQUEST['sb'])){
+	$cat = $_REQUEST['sb'];
+	$colorCatLink = "?cat=".$_REQUEST['cat']."&sb=".$_REQUEST['sb'];
+	
+}
+
+if(isset($_REQUEST['searchterm']) && !empty($_REQUEST['searchterm'])){	
+	$cat = "mens-".urlencode(trim($_REQUEST['searchterm']));
+	$searchSring = $cat;
+	$colorCatLink = "?cat=".$cat;
+	
+}
+
+$brandUrl = "";
+if(isset($_REQUEST['brand']) && !empty($_REQUEST['brand'])){
+	$brand = $_REQUEST['brand'];	
+	$brandUrl = '&fl=b'.$brand;
+}
+
+$colorUrl = "";
+if(isset($_REQUEST['cl']) && !empty($_REQUEST['cl'])){
+	$color = $_REQUEST['cl'];
+	$colorUrl = '&fl=c'.$color;
+}
+
+if(isset($_REQUEST['searchterm']) && !empty($_REQUEST['searchterm'])){	
+	$cat = "mens-".urlencode(trim($_REQUEST['searchterm']));		
+}
+
+
+
+
+
+
+
 $categories = $shop->getCategories();
 $meta_name = $categories->metadata->root->name;
 $meta_description = $categories->metadata->root->fullName;
 $meta_keyword = $categories->metadata->root->fullName;
 
-$products = $shop->getProducts()->products;
+
+$limit = 50;
+$offset = 0;
+$page = 1;
+if(isset($_REQUEST['page']) && !empty($_REQUEST['page'])){
+	$page = $_REQUEST['page'] ;//- 1;
+	$offset = $page * $limit;
+	
+}
+
+$product_arr = array('fts' => $cat);
+$products = $shop->getProducts($limit,$offset,$product_arr)->products;
+
+$product_meta = $shop->getProducts()->metadata;
+$limit = $product_meta->limit;
+$offset = $product_meta->offset;
+$total = $product_meta->total;
+
+$total_pages = ceil($total/$limit); 
+
 //echo "<pre>";print_r($products);die;
  require_once 'header.php'; 
  
@@ -33,16 +96,16 @@ $products = $shop->getProducts()->products;
 					<!--  -->
 					<div class="flex-sb-m flex-w p-b-35">
 						<div class="flex-w">
-							<div class="rs2-select2 bo4 of-hidden w-size12 m-t-5 m-b-5 m-r-10">
+							<!--<div class="rs2-select2 bo4 of-hidden w-size12 m-t-5 m-b-5 m-r-10">
 								<select class="selection-2" name="sorting">
 									<option>Default Sorting</option>
 									<option>Popularity</option>
 									<option>Price: low to high</option>
 									<option>Price: high to low</option>
 								</select>
-							</div>
+							</div>-->
 
-							<div class="rs2-select2 bo4 of-hidden w-size12 m-t-5 m-b-5 m-r-10">
+							<!--<div class="rs2-select2 bo4 of-hidden w-size12 m-t-5 m-b-5 m-r-10">
 								<select class="selection-2" name="sorting">
 									<option>Price</option>
 									<option>$0.00 - $50.00</option>
@@ -52,11 +115,11 @@ $products = $shop->getProducts()->products;
 									<option>$200.00+</option>
 
 								</select>
-							</div>
+							</div>-->
 						</div>
 
-						<span class="s-text8 p-t-5 p-b-5">
-							Showing 1–12 of 16 results
+						<span class="s-text8 p-t-5 p-b-5">							
+							<?php echo "Showing". $offset."-".$offset+$limit." of ".$total." results" ?>
 						</span>
 					</div>
 
@@ -67,9 +130,10 @@ $products = $shop->getProducts()->products;
 								<div class="col-sm-12 col-md-6 col-lg-4 p-b-50">
 									<!-- Block2 -->
 									<div class="block2">
-										<div class="block2-img wrap-pic-w of-hidden pos-relative block2-labelnew">
-											<img src="<?php echo $product->image->sizes->XLarge->url?>" alt="<?php echo $product->name?>">
-
+										<div class="block2-img wrap-pic-w of-hidden pos-relative block2-labelnew-tt">
+											<div class="productThumb">
+											<img src="<?php echo $product->image->sizes->Best->url?>" alt="<?php echo $product->name?>">
+											</div>
 											<div class="block2-overlay trans-0-4">
 												<a href="product/view/<?php echo $product->id?>" class="block2-btn-addwishlist hov-pointer trans-0-4">
 													<i class="icon-wishlist icon_heart_alt" aria-hidden="true"></i>
@@ -78,9 +142,9 @@ $products = $shop->getProducts()->products;
 
 												<div class="block2-btn-addcart w-size1 trans-0-4">
 													<!-- Button -->
-													<button class="flex-c-m size1 bg4 bo-rad-23 hov1 s-text1 trans-0-4">
+													<a class="flex-c-m size1 bg4 bo-rad-23 hov1 s-text1 trans-0-4"  href="product/view/<?php echo $product->id?>">
 														View Product
-													</button>
+													</a>
 												</div>
 											</div>
 										</div>
@@ -100,14 +164,27 @@ $products = $shop->getProducts()->products;
 						<?php endif;?>						
 
 					<!-- Pagination -->
-					<div class="pagination flex-m flex-w p-t-26">
+					
+					<!--<div class="pagination flex-m flex-w p-t-26">
 						<a href="#" class="item-pagination flex-c-m trans-0-4 active-pagination">1</a>
 						<a href="#" class="item-pagination flex-c-m trans-0-4">2</a>
-					</div>
+					</div>-->
 				</div>
+				<?php require_once 'pagination.php';?>
 			</div>
 		</div>
 	</section>
 
 
  <?php require_once 'footer.php';?>
+ 
+ <style>
+ .productThumb {
+    background: #fff none repeat scroll 0 0;
+    height: 300px;
+    margin: 0 0 5px;
+    overflow: hidden;
+    text-align: center;
+    width: 98%;
+}
+</style>

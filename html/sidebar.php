@@ -11,15 +11,41 @@ $categories = $categories->categories;
 		</h4>
 
 		<ul class="p-b-54">
-			<?php foreach($categories as $category):?>
-			<?php if($category->parentId == $category->id):?>
-				<li class="p-t-4">
-					<a href="<?php echo $category->id?>" class="s-text13 active1">
-						<?php echo $category->fullName?>
-					</a>
-				</li>
-			<?php endif;?>
-			<?php endforeach;?>			
+			<?php 
+			foreach($categories as $category){
+				if( $category->id == 'mens-clothes'){  ?>
+					<li class="allMenswear">
+						<a href="#<?php echo $category->id?>/">See All Menswear »</a>
+					</li>
+				<?php }
+				
+				if(($category->parentId == 'mens-clothes' || $category->parentId == "men") && ( $category->id != 'mens-clothes')){
+				$textColor = "";
+				if(isset($_REQUEST['cat'])&& $category->id == $_REQUEST['cat']){
+						$textColor = "color:#e65540";
+				}
+				?>
+					<li class="catActive" data-value="<?php echo $category->id?>">
+						<a href="?cat=<?php echo $category->id ?>" style="<?php echo $textColor?>" rel="nofollow"><?php echo $category->name?></a>
+					</li>	
+				<?php 		
+				
+				 }
+				 
+				 if(isset($_REQUEST['cat']) && !empty($_REQUEST['cat']) && $_REQUEST['cat'] == $category->parentId ){
+					$stextColor = ''; 
+					if(isset($_GET['sb']) && $_GET['sb'] == $category->id){
+						$stextColor  = "color:#e65540";
+					}								
+					?>
+						 <li class="subcategory">
+						<a style="<?php echo $stextColor ?>" href="?cat=<?php echo trim($_REQUEST['cat']).'&sb='.$category->id ?>" rel="nofollow"><?php echo $category->name?></a>
+						</li>
+					<?php 
+					}
+				 
+			}	
+			?>			
 		</ul>		
 	</div>
 </div>
