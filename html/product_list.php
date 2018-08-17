@@ -1,50 +1,9 @@
-<?php require_once '../ShopStyle/API.php';
+<?php 
+require_once '../ShopStyle/API.php';
 include '../ShopStyle/Query/IQuery.php';
 include '../ShopStyle/Query/BasicQuery.php';
+require_once 'search.php';
 $shop = new API('uid761-40030819-76');
-
-
-$cat = "mens-accessories";
-$colorCatLink = "";
-if(isset($_REQUEST['cat']) && !empty($_REQUEST['cat'])){
-	$cat = $_REQUEST['cat'];			
-	$colorCatLink = "?cat=".$cat;
-}
-
-if(isset($_REQUEST['sb']) && !empty($_REQUEST['sb'])){
-	$cat = $_REQUEST['sb'];
-	$colorCatLink = "?cat=".$_REQUEST['cat']."&sb=".$_REQUEST['sb'];
-	
-}
-
-if(isset($_REQUEST['searchterm']) && !empty($_REQUEST['searchterm'])){	
-	$cat = "mens-".urlencode(trim($_REQUEST['searchterm']));
-	$searchSring = $cat;
-	$colorCatLink = "?cat=".$cat;
-	
-}
-
-$brandUrl = "";
-if(isset($_REQUEST['brand']) && !empty($_REQUEST['brand'])){
-	$brand = $_REQUEST['brand'];	
-	$brandUrl = '&fl=b'.$brand;
-}
-
-$colorUrl = "";
-if(isset($_REQUEST['cl']) && !empty($_REQUEST['cl'])){
-	$color = $_REQUEST['cl'];
-	$colorUrl = '&fl=c'.$color;
-}
-
-if(isset($_REQUEST['searchterm']) && !empty($_REQUEST['searchterm'])){	
-	$cat = "mens-".urlencode(trim($_REQUEST['searchterm']));		
-}
-
-
-
-
-
-
 
 $categories = $shop->getCategories();
 $meta_name = $categories->metadata->root->name;

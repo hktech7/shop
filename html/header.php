@@ -124,7 +124,7 @@
 				<!-- Header Icon -->
 				<div class="header-icons">
 					<div class="search-product pos-relative bo4 of-hidden">
-						<form id="search">
+						<form id="search" action='product_list.php'>
 							<input class="s-text7 size13 p-l-23 p-r-50" value="<?php echo (isset($_GET['searchterm']) ? $_GET['searchterm'] : '')?>" type="text" name="searchterm" placeholder="Search Products...">
 
 							<button class="flex-c-m size5 ab-r-m color2 color0-hov trans-0-4" type="submit">
